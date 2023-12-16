@@ -46,12 +46,12 @@ set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
-	Sources/main.c
+	#Sources/main.c
 	)
 
 set (PROJECT_DEFINES
 	# LIST COMPILER DEFINITIONS HERE
-
+    STM32F411xE
     )
 
 set (PROJECT_INCLUDES
@@ -83,3 +83,4 @@ set (CMAKE_EXE_LINKER_FLAGS "-T${LINKER_SCRIPT} ${RUNTIME_LIBRARY_SYSCALLS} -Wl,
 set (CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -x assembler-with-cpp")
 
 add_subdirectory(Sources)
+add_subdirectory(STM32_SDK)
