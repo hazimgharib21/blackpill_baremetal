@@ -40,51 +40,64 @@ set (PROJECT_TYPE             "exe")
 set (LINKER_SCRIPT            "../STM32F411CEUX_FLASH.ld")
 set (MCPU                     "-mcpu=Cortex-M4")
 set (MFPU                 "-mfpu=fpv4-sp-d16")
-set (MFLOAT_ABI               "")
+set (MFLOAT_ABI               "-mfloat-abi=hard")
 set (RUNTIME_LIBRARY          "--specs=nano.specs")
 set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
+set(STM32_DRIVER_DIR "STM32_SDK/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver")
+
+set(CMSIS_DRIVER_DIR "STM32_SDK/STM32CubeF4/Drivers/CMSIS")
+
 set (PROJECT_SOURCES
-	# LIST SOURCE FILES HERE
-	#Sources/main.c
-	)
+  "Core/src/main.c"
+  "${CMSIS_DRIVER_DIR}/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c"
+  "${CMSIS_DRIVER_DIR}/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s"
+  "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_cortex.c"
+  "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_gpio.c"
+  "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_rcc.c"
+  "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal.c"
+)
 
 set (PROJECT_DEFINES
-	# LIST COMPILER DEFINITIONS HERE
     STM32F411xE
-    )
+)
 
 set (PROJECT_INCLUDES
-	# LIST INCLUDE DIRECTORIES HERE
-    )
+  "Core/includes"
+  "${STM32_DRIVER_DIR}/Inc"
+  "${CMSIS_DRIVER_DIR}/Include"
+  "${CMSIS_DRIVER_DIR}/Device/ST/STM32F4xx/Include"
+)
 
-############ MODIFY ACCORDING TO REQUIREMENTS) ########################
-
-#######################################################################
-
-################## PROJECT SETUP ######################################
 project(${PROJECT_NAME})
-enable_language(ASM)
+enable_language(C ASM)
 
-if (${PROJECT_TYPE} MATCHES ${PROJECT_TYPE_EXECUTABLE})
-  add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
-  add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${CMAKE_PROJECT_NAME}>)
-  ADD_CUSTOM_COMMAND(OUTPUT ${PROJECT_NAME}.bin DEPENDS ${PROJECT_NAME}.elf COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin)
-  ADD_CUSTOM_COMMAND(OUTPUT ${PROJECT_NAME}.hex DEPENDS ${PROJECT_NAME}.elf COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex)
-  ADD_CUSTOM_TARGET(${PROJECT_NAME}_bin DEPENDS ${PROJECT_NAME}.bin)
-  ADD_CUSTOM_TARGET(${PROJECT_NAME}_hex DEPENDS ${PROJECT_NAME}.hex)
-elseif (${PROJECT_TYPE} MATCHES ${PROJECT_TYPE_STATIC_LIBRARY})
-  add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
-endif()
+add_executable(${PROJECT_NAME}
+  ${PROJECT_SOURCES}
+)
+
+add_custom_command(TARGET
+  ${CMAKE_PROJECT_NAME} 
+  POST_BUILD 
+  COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
+)
+
+
 
 add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
 
 set (CMAKE_EXECUTABLE_SUFFIX ".elf")
 set (CMAKE_STATIC_LIBRARY_SUFFIX ".a")
-set (CMAKE_C_FLAGS "${MCPU} -std=gnu11 ${MFPU} ${MFLOAT_ABI} ${RUNTIME_LIBRARY} -mthumb -Wall -Werror")
-set (CMAKE_EXE_LINKER_FLAGS "-T${LINKER_SCRIPT} ${RUNTIME_LIBRARY_SYSCALLS} -Wl,-Map=test.map -Wl,--gc-sections -static -Wl,--start-group -lc -lm -Wl,--end-group")
+set (CMAKE_C_FLAGS "${MCPU} -std=gnu11 ${MFPU} ${MFLOAT_ABI} ${RUNTIME_LIBRARY} -fdata-sections -ffunction-sections -mthumb -Wall -Werror")
+set (CMAKE_EXE_LINKER_FLAGS "-T${LINKER_SCRIPT} ${RUNTIME_LIBRARY_SYSCALLS} -Wl,-Map=${PROJECT_NAME}.map,--cref -Wl,--gc-sections -static -Wl,--start-group -lc -lm -Wl,--end-group")
 set (CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -x assembler-with-cpp")
 
-add_subdirectory(Core)
-add_subdirectory(STM32_SDK)
+add_custom_command(TARGET
+  ${CMAKE_PROJECT_NAME} 
+  POST_BUILD
+  COMMAND arm-none-eabi-objcopy -O ihex ${CMAKE_PROJECT_NAME}.elf ${PROJECT_NAME}.hex
+  COMMAND arm-none-eabi-objcopy -O binary ${CMAKE_PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+)
+#add_subdirectory(Core)
+#add_subdirectory(STM32_SDK)
