@@ -7,7 +7,7 @@
         {
             "name": "Cortex Debug",
             "cwd": "${workspaceFolder}",
-            "executable": "./Debug/blackpill.elf",
+            "executable": "./build/blackpill.elf",
             "request": "launch",
             "type": "cortex-debug",
             "runToEntryPoint": "main",

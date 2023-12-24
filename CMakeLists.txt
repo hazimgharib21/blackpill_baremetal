@@ -50,6 +50,10 @@ set(CMSIS_DRIVER_DIR "STM32_SDK/STM32CubeF4/Drivers/CMSIS")
 
 set (PROJECT_SOURCES
   "Core/src/main.c"
+  "Core/src/syscalls.c"
+  "Core/src/sysmem.c"
+  "Core/src/stm32f4xx_it.c"
+  "Core/src/stm32f4xx_hal_msp.c"
   "${CMSIS_DRIVER_DIR}/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c"
   "${CMSIS_DRIVER_DIR}/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s"
   "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_cortex.c"

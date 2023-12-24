@@ -1,0 +1,12 @@
+{
+    "git.ignoreLimitWarning": true,
+    "cortex-debug.variableUseNaturalFormat": true,
+    "C_Cpp.default.compilerPath": "/usr/bin/arm-none-eabi-gcc",
+    "cmake.configureOnOpen": true,
+    "cmake.installPrefix": "",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/toolchain.cmake",
+    ]
+
+}
