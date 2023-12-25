@@ -59,6 +59,7 @@ set (PROJECT_SOURCES
   "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_cortex.c"
   "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_gpio.c"
   "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_rcc.c"
+  "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal_adc.c"
   "${STM32_DRIVER_DIR}/Src/stm32f4xx_hal.c"
 )
 
